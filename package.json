@@ -1,0 +1,39 @@
+{
+  "name": "event-emitter",
+  "version": "0.0.1",
+  "description": "Hopin Event Emitter",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "test": "jest --coverage",
+    "watch": "jest --watch",
+    "build": "tsc",
+    "prepublishOnly": "npm test",
+    "prepare": "npm run build",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scopethis/event-emitter.git"
+  },
+  "author": "Simon Hamilton",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scopethis/event-emitter/issues"
+  },
+  "homepage": "https://github.com/scopethis/event-emitter#readme",
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "jest": "^27.2.4",
+    "prettier": "2.4.1",
+    "ts-jest": "^27.0.5",
+    "typescript": "^4.4.3"
+  }
+}
