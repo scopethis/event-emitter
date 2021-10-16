@@ -31,10 +31,9 @@ const trigger = (type: string, ...args: Array<any>): void => {
  * Register a listener for an event of a particular type.
  * @param type Event name to listen to.
  * @param handler Function to execute when the event is triggered.
- * @returns A symbol that can be used to remove the listener.
+ * @returns A key (string) that can be used to remove the listener.
  */
 const on = (type: string, handler: Function): string => {
-  // const key = Symbol.for(`${type}_${uuid()}`)
   const key = `${type}_${uuid()}`
   handlers[key] = handler
 
@@ -43,7 +42,7 @@ const on = (type: string, handler: Function): string => {
 
 /**
  * Stop listening for events by passing the correct key.
- * @param key An associated symbol that was supplied 
+ * @param key An associated key that was supplied 
  *            when listening for an event.
  */
 const off = (key: string): void => {
