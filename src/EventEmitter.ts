@@ -14,7 +14,7 @@ const handlers: Handlers = {}
  */
 const trigger = (type: string, ...args: Array<any>): void => {
   try {
-    const event: Function[] = getEvent(type)
+    const event: Function[] = createEvent(type)
     event.forEach(handler => {
       handler(...args)
     })
@@ -71,7 +71,7 @@ const getHandlersForEvent = (type: string):Function[] => {
 const getEvent = (type: string): Function[] => {
   let event = handlers[type]
   if (!event) {
-    throw new Error('Event type not found')
+    throw new Error(`Event type: ${type} not found`)
   }
   return event
 }

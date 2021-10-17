@@ -58,11 +58,8 @@ describe('Hopin Event Emitter', () => {
 
     off('bonjour', inFrench)
     expect(() => {
-      trigger('bonjour')
-    }).toThrowError(new Error('Event type not found'))
-    expect(() => {
-      getHandlersForEvent('jump')
-    }).toThrowError(new Error('Event type not found'))
+      getHandlersForEvent('bonjour')
+    }).toThrowError(new Error(`Event type: bonjour not found`))
   })
 
   test('it tidies up after itself', () => {
@@ -75,11 +72,8 @@ describe('Hopin Event Emitter', () => {
 
     off('jump', iAmJumping)
     expect(() => {
-      trigger('jump')
-    }).toThrowError(new Error('Event type not found'))
-    expect(() => {
       getHandlersForEvent('jump')
-    }).toThrowError(new Error('Event type not found'))
+    }).toThrowError(new Error(`Event type: jump not found`))
   })
 
   test('Arbitrary arguments can be passed', () => {
