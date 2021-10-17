@@ -1,57 +1,110 @@
-import uuid from './Uuid'
-
 type Handlers = {
-  [key: string]: Function
+  [key: string]: Function[]
 }
 
 const handlers: Handlers = {}
 
 /**
- * Trigger an event notification to all listeners 
- * of this type as well as passing on any parameters
- * that were supplied.
+ * Trigger a notification to all listeners of this event type
+ * as well as passing on any parameters that were supplied.
  * @param type Event to trigger
  * @param args A comma seperated list of parameters. 
  *             to be passed as arguments to the listener 
  *             in the order they were given.
  */
 const trigger = (type: string, ...args: Array<any>): void => {
-  const keys = Object.getOwnPropertyNames(handlers)
-  const callables = keys.filter(key => {
-      const identifier = key.split('_')
-      return identifier[0] === type
-  })
-
-  callables.forEach(handler => {
-    handlers[handler](...args)
-  })
+  try {
+    const event: Function[] = getEvent(type)
+    event.forEach(handler => {
+      handler(...args)
+    })
+  } catch(error) {
+    throw error
+  }
 }
 
 /**
  * Register a listener for an event of a particular type.
  * @param type Event name to listen to.
  * @param handler Function to execute when the event is triggered.
- * @returns A key (string) that can be used to remove the listener.
  */
-const on = (type: string, handler: Function): string => {
-  const key = `${type}_${uuid()}`
-  handlers[key] = handler
-
-  return key
+const on = (type: string, handler: Function): void => {
+  let event = createEvent(type)
+  event.push(handler)
 }
 
 /**
- * Stop listening for events by passing the correct key.
- * @param key An associated key that was supplied 
- *            when listening for an event.
+ * Stop listening for events by passing the type and function.
+ * @param type Event name to unsubscribe from.
+ * @param handler Function to remove
  */
-const off = (key: string): void => {
-  delete handlers[key]
+const off = (type: string, handler: Function): void => {
+  let event = getEvent(type)
+  const updatedEvent = event.filter(listeners => {
+    return listeners !== handler
+  })
+
+  handlers[type] = updatedEvent
+  prune()
+}
+
+/**
+ * Returns a list of subscribers who 
+ * have subscribed to the event
+ * @param type Event name.
+ * @returns An array of handlers assigned to the event
+ */
+const getHandlersForEvent = (type: string):Function[] => {
+  let event = getEvent(type)
+  return event.map(handler => {
+    return handler
+  })
+}
+
+/**
+ * Finds the event namespace
+ * for the supplied type.
+ * @param type 
+ * @returns An empty array or an array 
+ *          of handlers assigned to the event
+ */
+const getEvent = (type: string): Function[] => {
+  let event = handlers[type]
+  if (!event) {
+    throw new Error('Event type not found')
+  }
+  return event
+}
+
+/**
+ * Creates the event namespace
+ * for the supplied type.
+ * @param type 
+ * @returns An empty array 
+ */
+const createEvent = (type: string):Function[] => {
+  let event = handlers[type]
+  if (!event) {
+    event = handlers[type] = []
+  }
+  return event
+}
+
+/**
+ * Removes any events that have 0 subscribers
+ */
+const prune = () => {
+  const keys = Object.getOwnPropertyNames(handlers)
+  keys.forEach(event => {
+    if(handlers[event].length < 1) {
+      delete handlers[event]
+    }
+  })
 }
 
 export {
   on,
   off,
   trigger,
-  handlers
+  getHandlersForEvent
 }

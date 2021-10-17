@@ -1,18 +1,18 @@
-import { on, trigger, handlers, off} from '../src/EventEmitter'
+import { on, trigger, getHandlersForEvent, off} from '../src/EventEmitter'
 
 describe('Hopin Event Emitter', () => {
-  test('it stores the supplied type and function', () => {
-    const hello = jest.fn();
-    const goodbye = jest.fn();
 
-    const aKey = on('hello', hello)
-    const bKey = on('goodbye', goodbye)
+  test('it stores the supplied event and function', () => {
+    const sleeping = jest.fn();
+    const eating = jest.fn();
 
-    expect(handlers[aKey]).toEqual(hello)
-    expect(handlers[bKey]).toEqual(goodbye)
+    on('sleep', sleeping)
+    on('eat', eating)
+
+    expect(getHandlersForEvent('sleep')[0]).toEqual(sleeping)
+    expect(getHandlersForEvent('eat')[0]).toEqual(eating)
   })
 
-  
   test('the handler is called when triggered', () => {
     const hello = jest.fn();
 
@@ -26,26 +26,26 @@ describe('Hopin Event Emitter', () => {
 
 
   test('the same event type can be used with different handlers', () => {
-    const inEnglish = jest.fn();
-    const inFrench = jest.fn();
-    const inSpanish = jest.fn();
+    const snooze = jest.fn();
+    const upAndAtem = jest.fn();
+    const dayOff = jest.fn();
 
-    on('greet', inEnglish)
-    on('greet', inFrench)
-    on('greet', inSpanish)
+    on('alarm', snooze)
+    on('alarm', upAndAtem)
+    on('alarm', dayOff)
 
-    trigger('greet')
+    trigger('alarm')
 
-    expect(inEnglish).toHaveBeenCalledTimes(1)
-    expect(inFrench).toHaveBeenCalledTimes(1)
-    expect(inSpanish).toHaveBeenCalledTimes(1)
+    expect(snooze).toHaveBeenCalledTimes(1)
+    expect(upAndAtem).toHaveBeenCalledTimes(1)
+    expect(dayOff).toHaveBeenCalledTimes(1)
   })
 
   test('An event can be turned off', () => {
     const inFrench = jest.fn();
     const inItalian = jest.fn();
 
-    const frenchKey = on('bonjour', inFrench)
+    on('bonjour', inFrench)
     on('ciao', inItalian)
 
     trigger('bonjour')
@@ -53,11 +53,33 @@ describe('Hopin Event Emitter', () => {
     expect(inFrench).toHaveBeenCalledTimes(1)
     expect(inItalian).toHaveBeenCalledTimes(1)
 
-    off(frenchKey)
-    trigger('bonjour')
     trigger('ciao')
-    expect(inFrench).toHaveBeenCalledTimes(1)
     expect(inItalian).toHaveBeenCalledTimes(2)
+
+    off('bonjour', inFrench)
+    expect(() => {
+      trigger('bonjour')
+    }).toThrowError(new Error('Event type not found'))
+    expect(() => {
+      getHandlersForEvent('jump')
+    }).toThrowError(new Error('Event type not found'))
+  })
+
+  test('it tidies up after itself', () => {
+    const iAmJumping = jest.fn();
+
+    on('jump', iAmJumping)
+    trigger('jump')
+
+    expect(iAmJumping).toHaveBeenCalledTimes(1)
+
+    off('jump', iAmJumping)
+    expect(() => {
+      trigger('jump')
+    }).toThrowError(new Error('Event type not found'))
+    expect(() => {
+      getHandlersForEvent('jump')
+    }).toThrowError(new Error('Event type not found'))
   })
 
   test('Arbitrary arguments can be passed', () => {
