@@ -3,7 +3,7 @@ type Handlers = {
 }
 
 type HandlerMap = {
-  [key:string]: Function
+  [key: string]: Function
 }
 
 const handlers: Handlers = {}
@@ -22,31 +22,39 @@ const trigger = (type: string, ...args: Array<any>): void => {
     event.forEach(handler => {
       handler(...args)
     })
-  } catch(error) {
+  } catch (error) {
     throw error
   }
 }
 
 /**
  * Register a listener for an event of a particular type.
- * @param type Event name to listen to.
+ * @param type Event name to listen to. Or map of events where
+ *             the type is the key and the handler is the value
  * @param handler Function to execute when the event is triggered.
  */
 const on = (event: string | HandlerMap, handler?: Function): void => {
   if (typeof event === "string") {
     if (handler) {
-      let notification = createEvent(event)
-      notification.push(handler)
+      register(event, handler)
     }
   } else {
-    const keys:Array<string> = Object.keys(event)
+    const keys: Array<string> = Object.keys(event)
     keys.forEach(key => {
-      let notification = createEvent(key)
       const listener = event[key]
-      notification.push(listener)
+      register(key, listener)
     })
   }
+}
 
+/**
+ * Register an listener to an event
+ * @param event The event to listen to
+ * @param handler The function to be called
+ */
+const register = (event: string, handler: Function):void => {
+  let notification = createEvent(event)
+  notification.push(handler)
 }
 
 
@@ -86,7 +94,7 @@ const getEvent = (type: string): Function[] => {
  * @param type 
  * @returns An empty array 
  */
-const createEvent = (type: string):Function[] => {
+const createEvent = (type: string): Function[] => {
   let event = handlers[type]
   if (!event) {
     event = handlers[type] = []
@@ -100,7 +108,7 @@ const createEvent = (type: string):Function[] => {
 const prune = () => {
   const keys = Object.getOwnPropertyNames(handlers)
   keys.forEach(event => {
-    if(handlers[event].length < 1) {
+    if (handlers[event].length < 1) {
       delete handlers[event]
     }
   })
