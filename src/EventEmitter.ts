@@ -2,6 +2,10 @@ type Handlers = {
   [key: string]: Function[]
 }
 
+type HandlerMap = {
+  [key:string]: Function
+}
+
 const handlers: Handlers = {}
 
 /**
@@ -28,10 +32,23 @@ const trigger = (type: string, ...args: Array<any>): void => {
  * @param type Event name to listen to.
  * @param handler Function to execute when the event is triggered.
  */
-const on = (type: string, handler: Function): void => {
-  let event = createEvent(type)
-  event.push(handler)
+const on = (event: string | HandlerMap, handler?: Function): void => {
+  if (typeof event === "string") {
+    if (handler) {
+      let notification = createEvent(event)
+      notification.push(handler)
+    }
+  } else {
+    const keys:Array<string> = Object.keys(event)
+    keys.forEach(key => {
+      let notification = createEvent(key)
+      const listener = event[key]
+      notification.push(listener)
+    })
+  }
+
 }
+
 
 /**
  * Stop listening for events by passing the type and function.

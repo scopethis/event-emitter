@@ -19,6 +19,25 @@ describe('Hopin Event Emitter', () => {
     expect(hello).toHaveBeenCalledTimes(1)
   })
 
+  test('multiple event/handlers can be registered at once', () => {
+    const jump = jest.fn();
+    const walk = jest.fn();
+    const run = jest.fn();
+
+    on({ 
+      jump: jump,
+      walk: walk,
+      run: run
+    })
+
+    trigger('jump')
+    trigger('walk')
+    trigger('run')
+
+    expect(jump).toHaveBeenCalledTimes(1)
+    expect(walk).toHaveBeenCalledTimes(1)
+    expect(run).toHaveBeenCalledTimes(1)
+  })
 
   test('the same event type can be used with different handlers', () => {
     const snooze = jest.fn();
