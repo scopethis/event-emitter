@@ -1,6 +1,12 @@
 import { on, trigger, off} from '../src/EventEmitter'
 
 describe('Hopin Event Emitter', () => {
+  test('An error is not thrown if trigger if event not registered', () => {
+    expect(() => {
+      trigger('greet')
+    }).not.toThrow()
+  })
+
 
   test('the handler is called when triggered', () => {
     const hello = jest.fn();
