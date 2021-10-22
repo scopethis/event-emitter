@@ -49,19 +49,6 @@ const off = (type: string, handler: Function): void => {
 }
 
 /**
- * Returns a list of subscribers who 
- * have subscribed to the event
- * @param type Event name.
- * @returns An array of handlers assigned to the event
- */
-const getHandlersForEvent = (type: string):Function[] => {
-  let event = getEvent(type)
-  return event.map(handler => {
-    return handler
-  })
-}
-
-/**
  * Finds the event namespace
  * for the supplied type.
  * @param type 
@@ -105,6 +92,5 @@ const prune = () => {
 export {
   on,
   off,
-  trigger,
-  getHandlersForEvent
+  trigger
 }

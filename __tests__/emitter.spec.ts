@@ -1,4 +1,4 @@
-import { on, trigger, getHandlersForEvent, off} from '../src/EventEmitter'
+import { on, trigger, off} from '../src/EventEmitter'
 
 describe('Hopin Event Emitter', () => {
 
@@ -46,9 +46,8 @@ describe('Hopin Event Emitter', () => {
     expect(inItalian).toHaveBeenCalledTimes(2)
 
     off('bonjour', inFrench)
-    expect(() => {
-      getHandlersForEvent('bonjour')
-    }).toThrowError(new Error(`Event type: bonjour not found`))
+    trigger('bonjour')
+    expect(inFrench).toHaveBeenCalledTimes(1)
   })
 
   test('it tidies up after itself', () => {
@@ -60,9 +59,8 @@ describe('Hopin Event Emitter', () => {
     expect(iAmJumping).toHaveBeenCalledTimes(1)
 
     off('jump', iAmJumping)
-    expect(() => {
-      getHandlersForEvent('jump')
-    }).toThrowError(new Error(`Event type: jump not found`))
+    trigger('jump')
+    expect(iAmJumping).toHaveBeenCalledTimes(1)
   })
 
   test('Arbitrary arguments can be passed', () => {
