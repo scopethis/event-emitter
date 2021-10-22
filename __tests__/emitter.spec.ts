@@ -2,17 +2,6 @@ import { on, trigger, getHandlersForEvent, off} from '../src/EventEmitter'
 
 describe('Hopin Event Emitter', () => {
 
-  test('it stores the supplied event and function', () => {
-    const sleeping = jest.fn();
-    const eating = jest.fn();
-
-    on('sleep', sleeping)
-    on('eat', eating)
-
-    expect(getHandlersForEvent('sleep')[0]).toEqual(sleeping)
-    expect(getHandlersForEvent('eat')[0]).toEqual(eating)
-  })
-
   test('the handler is called when triggered', () => {
     const hello = jest.fn();
 
